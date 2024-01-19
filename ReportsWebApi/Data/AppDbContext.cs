@@ -10,6 +10,5 @@ namespace ReportsWebApi.Data
         }
 
         public DbSet<DateTimeModel> DateTimeModel { get; set; }
-        public DbSet<Response> MdxResponse { get; set; }
     }
 }

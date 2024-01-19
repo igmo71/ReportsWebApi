@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
-using ReportsWebApi.Models;
 using ReportsWebApi.Services;
 
 namespace ReportsWebApi.Controllers
@@ -16,12 +14,16 @@ namespace ReportsWebApi.Controllers
             _service = service;
         }
 
-        [HttpGet]
-        public IActionResult Get()
+        [HttpPost("sql")]
+        public async Task<IActionResult> HandleSqlQueryAsync()
         {
-            List<Models.Response> result = _service.GetMdxResponse();
-            var response = result.Take(100);
-            return Ok(response);
+            var requestBody = await Request.Body.ReadAsStringAsync();
+
+            var parms = Request.Query.ToDictionary();
+
+            var result = _service.HandleSqlQuery(requestBody, parms);
+            
+            return Ok(result);
         }
 
 
@@ -32,19 +34,9 @@ namespace ReportsWebApi.Controllers
 
             var parms = Request.Query.ToDictionary();
 
-            var result = _service.HandleOpenquery(db, requestBody, parms, take);
+            var result = _service.HandleOpenquery(requestBody, parms, db, take);
             
             return Ok(result);
         }
-
-        //[HttpPost("sql")]
-        //public async Task<IActionResult> HandleSqlQueryAsync()
-        //{
-        //    var requestBody = await Request.Body.ReadAsStringAsync();
-        //    var request = $"select * from openquery([{db}],'{requestBody}')";
-        //    var result = _service.GetMdxResponseByDapper(request);
-
-        //    return Ok(result);
-        //}
     }
 }

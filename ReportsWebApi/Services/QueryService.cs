@@ -22,13 +22,21 @@ namespace ReportsWebApi.Services
 
         public IEnumerable<dynamic> HandleSqlQuery(string query, Dictionary<string, StringValues>? parms)
         {
-            if (parms != null)
+            if (parms != null && parms.Count > 0)
                 query = HandleParameters(query, parms);
 
+            IEnumerable<dynamic> result;
+
             using var connection = _dapper.CreateConnection();
-
-            IEnumerable<dynamic> result = connection.Query(query);
-
+            try
+            {
+                result = connection.Query(query);
+            }
+            catch (Exception ex)
+            {
+                result = new List<dynamic>();
+                ((List<dynamic>)result).Add(new { Error = ex.Message });
+            }
             return result;
         }
 

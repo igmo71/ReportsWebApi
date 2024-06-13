@@ -22,7 +22,12 @@ namespace ReportsWebApi.Controllers
             var parms = Request.Query.ToDictionary();
 
             var result = _service.HandleSqlQuery(requestBody, parms);
-            
+
+            if (result.FirstOrDefault()?.Error != null)
+            {
+                return BadRequest(result.FirstOrDefault());
+            }
+
             return Ok(result);
         }
 
@@ -35,7 +40,12 @@ namespace ReportsWebApi.Controllers
             var parms = Request.Query.ToDictionary();
 
             var result = _service.HandleOpenquery(requestBody, parms, db, take);
-            
+
+            if (result.FirstOrDefault()?.Error != null)
+            {
+                return BadRequest(result.FirstOrDefault());
+            }
+
             return Ok(result);
         }
     }
